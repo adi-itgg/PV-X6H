@@ -151,7 +151,7 @@ public final class MySQLRepositoryImpl implements MySQLRepository {
   }
 
   @Override
-  public Future<Void> insertCustomer(String id, String name, String gender, String phone, String address) {
+  public Future<Void> insertCustomer(String id, String name, Character gender, String phone, String address) {
     return preparedQuery("""
         INSERT INTO m_customer (id, name, gender, phone, address)
         VALUES (?, ?, ?, ?, ?)
@@ -160,7 +160,7 @@ public final class MySQLRepositoryImpl implements MySQLRepository {
   }
 
   @Override
-  public Future<Void> updateCustomerById(String id, String name, String gender, String phone, String address) {
+  public Future<Void> updateCustomerById(String id, String name, Character gender, String phone, String address) {
     return preparedQuery("""
         UPDATE m_customer
           SET name = ?, gender = ?, phone = ?, address = ?,

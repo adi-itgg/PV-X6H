@@ -22,7 +22,6 @@ public class CustomerForm extends BaseForm {
   private JPanel mp;
   private JTextField idTxt;
   private JTextField nameTxt;
-  private JTextField genderTxt;
   private JTextField phoneTxt;
   private JButton simpanButton;
   private JButton ubahButton;
@@ -32,12 +31,29 @@ public class CustomerForm extends BaseForm {
   private JTable tableItems;
   private JTextArea addressTxt;
   private JTextField searchTxt;
+  private JRadioButton lRadioButton;
+  private JRadioButton pRadioButton;
 
   private TimerTask typingTask;
 
   public CustomerForm(MySQLRepository mySQLRepository) {
     super(mySQLRepository);
     initialize();
+
+
+    lRadioButton.addChangeListener(e -> {
+      if (lRadioButton.isSelected()) {
+        pRadioButton.setSelected(false);
+      }
+    });
+
+    pRadioButton.addChangeListener(e -> {
+      if (pRadioButton.isSelected()) {
+        lRadioButton.setSelected(false);
+      }
+    });
+
+
     searchTxt.addKeyListener(new KeyAdapter() {
       @Override
       public void keyTyped(KeyEvent e) {
@@ -97,9 +113,10 @@ public class CustomerForm extends BaseForm {
 
   @Override
   protected Future<Void> onClick(ActionEvent e, ActionCommand actionCommand) {
+    char gender = lRadioButton.isSelected() ? 'L' : 'P';
     return switch (actionCommand) {
-      case Simpan -> mySQLRepository.insertCustomer(idTxt.getText(), nameTxt.getText(), genderTxt.getText(), phoneTxt.getText(), addressTxt.getText());
-      case Ubah -> mySQLRepository.updateCustomerById(idTxt.getText(), nameTxt.getText(), genderTxt.getText(), phoneTxt.getText(), addressTxt.getText());
+      case Simpan -> mySQLRepository.insertCustomer(idTxt.getText(), nameTxt.getText(), gender, phoneTxt.getText(), addressTxt.getText());
+      case Ubah -> mySQLRepository.updateCustomerById(idTxt.getText(), nameTxt.getText(), gender, phoneTxt.getText(), addressTxt.getText());
       case Hapus -> mySQLRepository.deleteCustomerById(idTxt.getText());
       case Keluar -> {
         System.exit(0);
@@ -120,7 +137,11 @@ public class CustomerForm extends BaseForm {
 
     idTxt.setText(id);
     nameTxt.setText(name);
-    genderTxt.setText(gender);
+    if (gender.equals("L")) {
+      lRadioButton.setSelected(true);
+    } else {
+      pRadioButton.setSelected(true);
+    }
     phoneTxt.setText(phone);
     addressTxt.setText(address);
   }

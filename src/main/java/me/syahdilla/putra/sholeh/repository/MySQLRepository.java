@@ -23,9 +23,9 @@ public interface MySQLRepository {
 
   Future<Stream<Map<String, Object>>> findAllCustomers();
 
-  Future<Void> insertCustomer(String id, String name, String gender, String phone, String address);
+  Future<Void> insertCustomer(String id, String name, Character gender, String phone, String address);
 
-  Future<Void> updateCustomerById(String id, String name, String gender, String phone, String address);
+  Future<Void> updateCustomerById(String id, String name, Character gender, String phone, String address);
 
   Future<Void> deleteCustomerById(String id);
 

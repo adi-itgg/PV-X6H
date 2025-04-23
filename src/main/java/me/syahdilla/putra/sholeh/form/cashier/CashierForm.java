@@ -149,7 +149,11 @@ public class CashierForm extends BaseForm {
 
     idTxt.setText(id);
     nameTxt.setText(name);
-    lRadioButton.setSelected(gender.equals("L"));
+    if (gender.equals("L")) {
+      lRadioButton.setSelected(true);
+    } else {
+      pRadioButton.setSelected(true);
+    }
     religionBox.setSelectedItem(religion);
     phoneTxt.setText(phone);
     addressTxt.setText(address);
