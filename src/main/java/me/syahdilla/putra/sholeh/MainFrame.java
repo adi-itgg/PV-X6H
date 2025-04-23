@@ -1,6 +1,7 @@
 package me.syahdilla.putra.sholeh;
 
 import com.formdev.flatlaf.FlatLightLaf;
+import me.syahdilla.putra.sholeh.form.customer.CustomerForm;
 import me.syahdilla.putra.sholeh.form.item.ItemForm;
 import me.syahdilla.putra.sholeh.repository.MySQLRepository;
 import org.slf4j.Logger;
@@ -56,7 +57,8 @@ public class MainFrame extends JFrame {
     setSize(500, 400);
     setLocationRelativeTo(null);
 //    setLayout(new MigLayout("al center center"));
-    add(new ItemForm(mySQLRepository).getMainPanel(), BorderLayout.CENTER);
+//    add(new ItemForm(mySQLRepository).getMainPanel(), BorderLayout.CENTER);
+    add(new CustomerForm(mySQLRepository).getMainPanel(), BorderLayout.CENTER);
     setVisible(true);
     log.info("UI application started");
   }

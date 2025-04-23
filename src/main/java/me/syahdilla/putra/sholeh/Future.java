@@ -126,4 +126,20 @@ public class Future<T> {
     return future;
   }
 
+  public static <T> Future<T> succeedFuture() {
+    return succeedFuture(null);
+  }
+
+  public static <T> Future<T> succeedFuture(T result) {
+    Future<T> future = new Future<>();
+    future.complete(result);
+    return future;
+  }
+
+  public static <T> Future<T> failedFuture(Throwable cause) {
+    Future<T> future = new Future<>();
+    future.fail(cause);
+    return future;
+  }
+
 }

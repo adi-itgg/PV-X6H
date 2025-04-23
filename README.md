@@ -6,8 +6,12 @@
 
 ---
 
-#### Form Barang
+#### Form Items
 
 ![Item Form](/picture/item-form.png)
 
 ---
+
+#### Form Customer
+
+![Customer Form](/picture/customer-form.png)

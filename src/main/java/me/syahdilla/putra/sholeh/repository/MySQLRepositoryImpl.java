@@ -141,5 +141,43 @@ public final class MySQLRepositoryImpl implements MySQLRepository {
     return preparedQuery("DELETE FROM m_item WHERE id = ?", id).mapEmpty();
   }
 
+  @Override
+  public Future<Stream<Map<String, Object>>> findAllCustomers() {
+    return preparedQuery("SELECT * FROM m_customer");
+  }
+
+  @Override
+  public Future<Void> insertCustomer(String id, String name, String gender, String phone, String address) {
+    return preparedQuery("""
+        INSERT INTO m_customer (id, name, gender, phone, address)
+        VALUES (?, ?, ?, ?, ?)
+        """, id, name, gender, phone, address)
+      .mapEmpty();
+  }
+
+  @Override
+  public Future<Void> updateCustomerById(String id, String name, String gender, String phone, String address) {
+    return preparedQuery("""
+        UPDATE m_customer
+          SET name = ?, gender = ?, phone = ?, address = ?,
+              updated_at = current_timestamp()
+        WHERE id = ?
+        """, name, gender, phone, address, id)
+      .mapEmpty();
+  }
+
+  @Override
+  public Future<Void> deleteCustomerById(String id) {
+    return preparedQuery("DELETE FROM m_customer WHERE id = ?", id).mapEmpty();
+  }
+
+  @Override
+  public Future<Stream<Map<String, Object>>> findCustomerByKeyword(String keyword) {
+    if (keyword.isBlank()) {
+      return findAllCustomers();
+    }
+    return preparedQuery("SELECT * FROM m_customer WHERE lower(name) LIKE ? OR phone LIKE ?", "%" + keyword + "%", "%" + keyword + "%");
+  }
+
 
 }

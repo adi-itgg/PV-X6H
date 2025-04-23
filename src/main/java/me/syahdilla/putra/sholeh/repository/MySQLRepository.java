@@ -20,4 +20,15 @@ public interface MySQLRepository {
   Future<Void> updateItemById(String id, String name, String type, Double buyPrice, Double sellPrice);
 
   Future<Void> deleteItemById(String id);
+
+  Future<Stream<Map<String, Object>>> findAllCustomers();
+
+  Future<Void> insertCustomer(String id, String name, String gender, String phone, String address);
+
+  Future<Void> updateCustomerById(String id, String name, String gender, String phone, String address);
+
+  Future<Void> deleteCustomerById(String id);
+
+  Future<Stream<Map<String, Object>>> findCustomerByKeyword(String keyword);
+
 }
