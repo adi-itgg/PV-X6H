@@ -20,7 +20,8 @@ create table m_customer
   gender     char                                  null,
   phone      varchar(20)                           null,
   address    varchar(500)                          null,
-  created_at timestamp default current_timestamp() null
+  created_at timestamp default current_timestamp() null,
+  updated_at timestamp default current_timestamp() null
 );
 
 create table m_item
