@@ -1,15 +1,13 @@
 package me.syahdilla.putra.sholeh;
 
 import com.formdev.flatlaf.FlatLightLaf;
-import me.syahdilla.putra.sholeh.form.cashier.CashierForm;
-import me.syahdilla.putra.sholeh.form.customer.CustomerForm;
-import me.syahdilla.putra.sholeh.form.item.ItemForm;
+import com.formdev.flatlaf.extras.FlatAnimatedLafChange;
+import me.syahdilla.putra.sholeh.form.main.MainForm;
 import me.syahdilla.putra.sholeh.repository.MySQLRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
-import java.awt.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -55,14 +53,20 @@ public class MainFrame extends JFrame {
     log.info("Starting UI application");
     setTitle("Aplikasi Kasir");
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    setSize(500, 400);
+    setSize(300, 340);
     setLocationRelativeTo(null);
-//    setLayout(new MigLayout("al center center"));
-//    add(new ItemForm(mySQLRepository).getMainPanel(), BorderLayout.CENTER);
-//    add(new CustomerForm(mySQLRepository).getMainPanel(), BorderLayout.CENTER);
-    add(new CashierForm(mySQLRepository).getMainPanel(), BorderLayout.CENTER);
+    setContainer(new MainForm(this, mySQLRepository).getMainPanel());
     setVisible(true);
     log.info("UI application started");
+  }
+
+  public void setContainer(JComponent component) {
+    setLocationRelativeTo(null);
+    FlatAnimatedLafChange.showSnapshot();
+    setContentPane(component);
+    component.applyComponentOrientation(getComponentOrientation());
+    SwingUtilities.updateComponentTreeUI(component);
+    FlatAnimatedLafChange.hideSnapshotWithAnimation();
   }
 
 }
