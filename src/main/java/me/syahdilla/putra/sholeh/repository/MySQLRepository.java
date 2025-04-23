@@ -31,4 +31,13 @@ public interface MySQLRepository {
 
   Future<Stream<Map<String, Object>>> findCustomerByKeyword(String keyword);
 
+  Future<Stream<Map<String, Object>>> findAllCashiers();
+
+  Future<Stream<Map<String, Object>>> findChashierByKeyword(String keyword);
+
+  Future<Void> insertCashier(String id, String name, Character gender, String phone, String religion, String address, String password);
+
+  Future<Void> updateCashierById(String id, String name, Character gender, String phone, String religion, String address, String password);
+
+  Future<Void> deleteCashierById(String id);
 }

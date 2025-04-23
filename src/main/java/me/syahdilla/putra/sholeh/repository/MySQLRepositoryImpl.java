@@ -78,6 +78,10 @@ public final class MySQLRepositoryImpl implements MySQLRepository {
           statement.setTimestamp(++i, Timestamp.from(instant));
           continue;
         }
+        if (arg instanceof Character character) {
+          statement.setString(++i, String.valueOf(character));
+          continue;
+        }
         statement.setObject(++i, arg);
       }
 
@@ -177,6 +181,44 @@ public final class MySQLRepositoryImpl implements MySQLRepository {
       return findAllCustomers();
     }
     return preparedQuery("SELECT * FROM m_customer WHERE lower(name) LIKE ? OR phone LIKE ?", "%" + keyword + "%", "%" + keyword + "%");
+  }
+
+  @Override
+  public Future<Stream<Map<String, Object>>> findAllCashiers() {
+    return preparedQuery("SELECT * FROM m_cashier");
+  }
+
+  @Override
+  public Future<Stream<Map<String, Object>>> findChashierByKeyword(String keyword) {
+    if (keyword.isBlank()) {
+      return findAllCashiers();
+    }
+    return preparedQuery("SELECT * FROM m_cashier WHERE lower(name) LIKE ? OR phone LIKE ?", "%" + keyword + "%", "%" + keyword + "%");
+  }
+
+  @Override
+  public Future<Void> insertCashier(String id, String name, Character gender, String phone, String religion, String address, String password) {
+    return preparedQuery("""
+        INSERT INTO m_cashier (id, name, gender, phone, religion, address, password)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+        """, id, name, gender, phone, religion, address, password)
+      .mapEmpty();
+  }
+
+  @Override
+  public Future<Void> updateCashierById(String id, String name, Character gender, String phone, String religion, String address, String password) {
+    return preparedQuery("""
+        UPDATE m_cashier
+          SET name = ?, gender = ?, phone = ?, religion = ?, address = ?, password = ?,
+              updated_at = current_timestamp()
+        WHERE id = ?
+        """, name, gender, phone, religion, address, password, id)
+      .mapEmpty();
+  }
+
+  @Override
+  public Future<Void> deleteCashierById(String id) {
+    return preparedQuery("DELETE FROM m_cashier WHERE id = ?", id).mapEmpty();
   }
 
 
