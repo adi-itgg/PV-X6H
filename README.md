@@ -1,6 +1,6 @@
 # Tugas Pemrograman Visual
 
-----
+[![Build Status](https://github.com/adi-itgg/java-aitech-library/actions/workflows/maven.yml/badge.svg)](https://github.com/adi-itgg/PV-X6H/actions/workflows/maven.yml)
 
 ## Syahdilla Putra Sholeh (202243500933)
 
