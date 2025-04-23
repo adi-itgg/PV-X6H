@@ -15,3 +15,11 @@
 #### Form Customer
 
 ![Customer Form](/picture/customer-form.png)
+
+---
+
+#### Form Cashier
+
+![Cashier Form](/picture/cashier-form.png)
+
+---
