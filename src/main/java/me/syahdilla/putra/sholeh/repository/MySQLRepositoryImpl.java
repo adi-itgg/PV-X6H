@@ -20,11 +20,9 @@ public final class MySQLRepositoryImpl implements MySQLRepository {
 
   private final ExecutorService executorService = Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors());
   private final Connection pool;
-  private final String jdbcUrl;
 
   MySQLRepositoryImpl(String jdbcUrl, String username, String password, Consumer<Throwable> errorHandler) {
     try {
-      this.jdbcUrl = jdbcUrl;
       this.pool = DriverManager.getConnection(jdbcUrl, username, password);
     } catch (Throwable e) {
       log.error("Error connecting to database", e);
