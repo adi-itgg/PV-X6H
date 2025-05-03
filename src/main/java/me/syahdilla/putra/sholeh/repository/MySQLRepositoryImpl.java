@@ -10,6 +10,7 @@ import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -19,17 +20,16 @@ public final class MySQLRepositoryImpl implements MySQLRepository {
 
   private final ExecutorService executorService = Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors());
   private final Connection pool;
+  private final String jdbcUrl;
 
-  MySQLRepositoryImpl(String jdbcUrl, String username, String password) {
+  MySQLRepositoryImpl(String jdbcUrl, String username, String password, Consumer<Throwable> errorHandler) {
     try {
+      this.jdbcUrl = jdbcUrl;
       this.pool = DriverManager.getConnection(jdbcUrl, username, password);
-//      List<Map<String, Object>> result = preparedQuery("SELECT current_timestamp()").toCompletionStage().toCompletableFuture().join().toList();
-      preparedQuery("SELECT current_timestamp()")
-        .onFailure(e -> log.error("Error connecting to database", e))
-        .onSuccess(result -> log.info("Connected to database: {} - {}", jdbcUrl, result.toList().getFirst().values().stream().findFirst().orElseThrow()));
     } catch (Throwable e) {
       log.error("Error connecting to database", e);
-      throw new IllegalStateException(e);
+      errorHandler.accept(e);
+      throw new IllegalStateException("Error connecting to database: " + e.getMessage());
     }
   }
 

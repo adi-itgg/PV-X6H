@@ -3,12 +3,13 @@ package me.syahdilla.putra.sholeh.repository;
 import me.syahdilla.putra.sholeh.Future;
 
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 public interface MySQLRepository {
 
-  static MySQLRepository pool(String jdbcUrl, String username, String password) {
-    return new MySQLRepositoryImpl(jdbcUrl, username, password);
+  static MySQLRepository pool(String jdbcUrl, String username, String password, Consumer<Throwable> errorHandler) {
+    return new MySQLRepositoryImpl(jdbcUrl, username, password, errorHandler);
   }
 
   Future<Stream<Map<String, Object>>> preparedQuery(String sql, Object... args);

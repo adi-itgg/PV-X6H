@@ -45,7 +45,11 @@ public class MainFrame extends JFrame {
     final String username = properties.getProperty("database.jdbc.username");
     final String password = properties.getProperty("database.jdbc.password");
 
-    return MySQLRepository.pool(jdbcUrl, username, password);
+    return MySQLRepository.pool(jdbcUrl, username, password, error -> {
+      JOptionPane.showMessageDialog(this, error.getMessage(), "Error - Database Connection", JOptionPane.ERROR_MESSAGE);
+      JOptionPane.showMessageDialog(this, "Aplikasi tidak akan berjalan semestinya karena koneksi ke database gagal", "Terjadi Kesalahan", JOptionPane.ERROR_MESSAGE);
+      System.exit(1);
+    });
   }
 
   private void initializeUI(MySQLRepository mySQLRepository) {
