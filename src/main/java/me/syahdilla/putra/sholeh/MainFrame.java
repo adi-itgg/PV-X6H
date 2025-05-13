@@ -2,8 +2,10 @@ package me.syahdilla.putra.sholeh;
 
 import com.formdev.flatlaf.FlatLightLaf;
 import com.formdev.flatlaf.extras.FlatAnimatedLafChange;
+import me.syahdilla.putra.sholeh.form.BaseForm;
 import me.syahdilla.putra.sholeh.form.main.MainForm;
-import me.syahdilla.putra.sholeh.repository.MySQLRepository;
+import me.syahdilla.putra.sholeh.model.ConnectionOptions;
+import me.syahdilla.putra.sholeh.pool.Pool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,8 +25,8 @@ public class MainFrame extends JFrame {
 
   public MainFrame() {
     final Properties properties = loadProperties();
-    final MySQLRepository mySQLRepository = initializeDatabase(properties);
-    initializeUI(mySQLRepository);
+    final Pool pool = initializeDatabase(properties);
+    initializeUI(pool);
   }
 
   private Properties loadProperties() {
@@ -40,28 +42,38 @@ public class MainFrame extends JFrame {
     return properties;
   }
 
-  private MySQLRepository initializeDatabase(Properties properties) {
+  private Pool initializeDatabase(Properties properties) {
     final String jdbcUrl = properties.getProperty("database.jdbc.url");
     final String username = properties.getProperty("database.jdbc.username");
     final String password = properties.getProperty("database.jdbc.password");
 
-    return MySQLRepository.pool(jdbcUrl, username, password, error -> {
+    final ConnectionOptions options = new ConnectionOptions.Builder()
+      .jdbcUrl(jdbcUrl)
+      .username(username)
+      .password(password)
+      .build();
+
+    return Pool.pool(options, error -> {
       JOptionPane.showMessageDialog(this, error.getMessage(), "Error - Database Connection", JOptionPane.ERROR_MESSAGE);
       JOptionPane.showMessageDialog(this, "Aplikasi tidak akan berjalan semestinya karena koneksi ke database gagal", "Terjadi Kesalahan", JOptionPane.ERROR_MESSAGE);
       System.exit(1);
     });
   }
 
-  private void initializeUI(MySQLRepository mySQLRepository) {
+  private void initializeUI(Pool pool) {
     // setup UI
     log.info("Starting UI application");
     setTitle("Aplikasi Kasir");
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     setSize(300, 340);
     setLocationRelativeTo(null);
-    setContainer(new MainForm(this, mySQLRepository).getMainPanel());
+    setContainer(new MainForm(this, pool));
     setVisible(true);
     log.info("UI application started");
+  }
+
+  public void setContainer(BaseForm form) {
+    setContainer(form.getMainPanel());
   }
 
   public void setContainer(JComponent component) {

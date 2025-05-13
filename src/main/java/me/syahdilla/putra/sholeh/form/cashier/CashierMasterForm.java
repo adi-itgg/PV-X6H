@@ -1,25 +1,18 @@
 package me.syahdilla.putra.sholeh.form.cashier;
 
 import at.favre.lib.crypto.bcrypt.BCrypt;
-import me.syahdilla.putra.sholeh.ActionCommand;
 import me.syahdilla.putra.sholeh.Future;
-import me.syahdilla.putra.sholeh.form.BaseForm;
-import me.syahdilla.putra.sholeh.repository.MySQLRepository;
+import me.syahdilla.putra.sholeh.form.AbstractBaseMasterForm;
+import me.syahdilla.putra.sholeh.model.ActionCommand;
+import me.syahdilla.putra.sholeh.repository.CashierRepository;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
 import java.awt.event.ActionEvent;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
-import java.util.Map;
 import java.util.Objects;
-import java.util.Timer;
-import java.util.TimerTask;
 
-public class CashierForm extends BaseForm {
+public class CashierMasterForm extends AbstractBaseMasterForm<CashierRepository> {
 
-  private static final java.util.Timer timer = new Timer(true);
 
   private JPanel mp;
   private JTextField idTxt;
@@ -38,11 +31,14 @@ public class CashierForm extends BaseForm {
   private JRadioButton lRadioButton;
   private JRadioButton pRadioButton;
 
-  private TimerTask typingTask;
 
-  public CashierForm(MySQLRepository mySQLRepository) {
-    super(mySQLRepository);
-    initialize();
+  public CashierMasterForm(CashierRepository cashierRepository) {
+    super(cashierRepository);
+  }
+
+  @Override
+  protected void initialize() {
+    super.initialize();
 
     religionBox.addItem("Islam");
     religionBox.addItem("Kristen");
@@ -62,30 +58,10 @@ public class CashierForm extends BaseForm {
         lRadioButton.setSelected(false);
       }
     });
-
-    searchTxt.addKeyListener(new KeyAdapter() {
-      @Override
-      public void keyTyped(KeyEvent e) {
-        if (typingTask != null) {
-          typingTask.cancel();
-        }
-        typingTask = new TimerTask() {
-          @Override
-          public void run() {
-            mySQLRepository.findChashierByKeyword(searchTxt.getText().toLowerCase()).onSuccess(stream -> {
-              DefaultTableModel model = (DefaultTableModel) tableItems.getModel();
-              model.setRowCount(0);
-              stream.forEach(item -> model.addRow(onAddRow(item)));
-            });
-          }
-        };
-        timer.schedule(typingTask, 800L);
-      }
-    });
   }
 
   @Override
-  public JPanel getMainPanel() {
+  protected JPanel mainPanel() {
     return mp;
   }
 
@@ -95,40 +71,29 @@ public class CashierForm extends BaseForm {
   }
 
   @Override
-  protected void updateTable() {
-    mySQLRepository.findAllCashiers().onSuccess(stream -> {
-      DefaultTableModel model = (DefaultTableModel) tableItems.getModel();
-      model.setRowCount(0);
-      stream.forEach(item -> model.addRow(onAddRow(item)));
-    });
-  }
-
-  @Override
-  protected Object[] onAddRow(Map<String, Object> item) {
-    return new Object[]{
-      item.get("id"),
-      item.get("name"),
-      item.get("gender"),
-      item.get("phone"),
-      item.get("religion"),
-      item.get("address"),
-      item.get("created_at"),
-      item.get("updated_at")
-    };
-  }
-
-  @Override
-  protected JTable getTableItems() {
+  protected JTable getTable() {
     return tableItems;
   }
 
   @Override
+  protected JTextField getSearchEditText() {
+    return searchTxt;
+  }
+
+  @Override
   protected Future<Void> onClick(ActionEvent e, ActionCommand actionCommand) {
-    char gender = lRadioButton.isSelected() ? 'L' : 'P';
+    final String id = idTxt.getText();
+    final String name = nameTxt.getText();
+    final String phone = phoneTxt.getText();
+    final String religion = religionBox.getSelectedItem() + "";
+    final String address = addressTxt.getText();
+    final String password = BCrypt.withDefaults().hashToString(10, passwordTxt.getPassword());
+    final char gender = lRadioButton.isSelected() ? 'L' : 'P';
+
     return switch (actionCommand) {
-      case Simpan -> mySQLRepository.insertCashier(idTxt.getText(), nameTxt.getText(), gender, phoneTxt.getText(), (String) religionBox.getSelectedItem(), addressTxt.getText(), BCrypt.withDefaults().hashToString(10, passwordTxt.getPassword()));
-      case Ubah -> mySQLRepository.updateCashierById(idTxt.getText(), nameTxt.getText(), gender, phoneTxt.getText(), (String) religionBox.getSelectedItem(), addressTxt.getText(), BCrypt.withDefaults().hashToString(10, passwordTxt.getPassword()));
-      case Hapus -> mySQLRepository.deleteCashierById(idTxt.getText());
+      case Simpan -> repository.save(id, name, gender, phone, religion, address, password);
+      case Ubah -> repository.update(id, name, gender, phone, religion, address, password);
+      case Hapus -> repository.delete(id);
       case Keluar -> {
         System.exit(0);
         yield Future.succeedFuture();
