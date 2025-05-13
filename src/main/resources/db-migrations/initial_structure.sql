@@ -1,4 +1,4 @@
-create table m_cashier
+create table if not exists m_cashier
 (
   id         varchar(10)                           not null
     primary key,
@@ -12,7 +12,7 @@ create table m_cashier
   updated_at timestamp default current_timestamp() null
 );
 
-create table m_customer
+create table if not exists m_customer
 (
   id         varchar(32)                           not null
     primary key,
@@ -24,7 +24,7 @@ create table m_customer
   updated_at timestamp default current_timestamp() null
 );
 
-create table m_item
+create table if not exists m_item
 (
   id         varchar(20)                           not null
     primary key,

@@ -10,8 +10,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.Objects;
 import java.util.Properties;
 
 public class MainFrame extends JFrame {
@@ -26,7 +29,30 @@ public class MainFrame extends JFrame {
   public MainFrame() {
     final Properties properties = loadProperties();
     final Pool pool = initializeDatabase(properties);
+    runMigrations(pool);
     initializeUI(pool);
+  }
+
+  private void runMigrations(Pool pool) {
+    log.info("Running migrations");
+
+    try (InputStream is = getClass().getClassLoader().getResourceAsStream("db-migrations/initial_structure.sql");
+         BufferedReader reader = new BufferedReader(new InputStreamReader(Objects.requireNonNull(is)))) {
+
+      final StringBuilder sql = new StringBuilder();
+      String line;
+      while ((line = reader.readLine()) != null) {
+        sql.append(line).append("\n");
+        if (line.contains(";")) {
+          pool.query(sql.toString()).toCompletionStage().toCompletableFuture().join();
+          sql.setLength(0);
+        }
+      }
+    } catch (Throwable e) {
+      log.error("Error migrations", e);
+    }
+
+    log.info("Migrations finished");
   }
 
   private Properties loadProperties() {
