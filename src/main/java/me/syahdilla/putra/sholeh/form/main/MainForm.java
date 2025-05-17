@@ -23,11 +23,19 @@ public class MainForm implements BaseForm {
   private JButton bukaButton2;
 
 
-  public MainForm(MainFrame mainFrame, Pool pool) {
-    final CashierRepository cashierRepository = new CashierRepositoryImpl(pool);
-    final ItemRepository itemRepository = new ItemRepositoryImpl(pool);
-    final CustomerRepository customerRepository = new CustomerRepositoryImpl(pool);
+  private final MainFrame mainFrame;
+  private final CashierRepository cashierRepository;
+  private final ItemRepository itemRepository;
+  private final CustomerRepository customerRepository;
 
+  public MainForm(MainFrame mainFrame, Pool pool) {
+    this.mainFrame = mainFrame;
+    this.cashierRepository = new CashierRepositoryImpl(pool);
+    this.itemRepository = new ItemRepositoryImpl(pool);
+    this.customerRepository = new CustomerRepositoryImpl(pool);
+  }
+
+  private void initialize() {
     bukaButton.addActionListener(e -> {
       mainFrame.setSize(800, 500);
       mainFrame.setContainer(new CashierMasterForm(cashierRepository).getMainPanel());
@@ -44,6 +52,7 @@ public class MainForm implements BaseForm {
 
   @Override
   public JPanel getMainPanel() {
+    initialize();
     return mp;
   }
 
